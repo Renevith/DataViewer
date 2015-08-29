@@ -52,8 +52,8 @@ namespace DataViewer
                 foodExerciseComboBox.DroppedDown = true;
                 return;
             }
-            DateTime d;
-            if (!DateTime.TryParse(timeTextBox.Text, out d)) {
+            TimeSpan t;
+            if (!TimeSpan.TryParse(timeTextBox.Text, out t)) {
                 timeTextBox.BackColor = Color.Red;
                 return;
             }
@@ -61,11 +61,11 @@ namespace DataViewer
             //add new entry to data grid:
             if (foodRadioButton.Checked) {
                 var foodData = (Data.FoodData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new FoodActivity(foodData, d));
+                Activities.Add(new FoodActivity(foodData, t));
             }
             else if (exerciseRadioButton.Checked) {
                 var exerciseData = (Data.ExerciseData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new ExerciseActivity(exerciseData, d));
+                Activities.Add(new ExerciseActivity(exerciseData, t));
             }
 
             foodExerciseComboBox.SelectedItem = null;
