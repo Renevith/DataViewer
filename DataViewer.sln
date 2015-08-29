@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataViewerApp", "DataViewer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSimulator", "HealthSimulator\HealthSimulator.csproj", "{F2180CDE-91F6-4DDD-B2FB-3C7CA20DA891}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{63F4457D-0748-433E-A0C7-35AFEB24CAF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,8 +21,15 @@ Global
 		{F2180CDE-91F6-4DDD-B2FB-3C7CA20DA891}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2180CDE-91F6-4DDD-B2FB-3C7CA20DA891}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2180CDE-91F6-4DDD-B2FB-3C7CA20DA891}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63F4457D-0748-433E-A0C7-35AFEB24CAF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F4457D-0748-433E-A0C7-35AFEB24CAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63F4457D-0748-433E-A0C7-35AFEB24CAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63F4457D-0748-433E-A0C7-35AFEB24CAF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
