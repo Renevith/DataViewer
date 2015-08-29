@@ -32,11 +32,11 @@
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.zedGraphControl = new ZedGraph.ZedGraphControl();
             this.foodExerciseComboBox = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.timeTextBox = new System.Windows.Forms.TextBox();
             this.addButton = new System.Windows.Forms.Button();
             this.deleteButton = new System.Windows.Forms.Button();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.foodRadioButton = new System.Windows.Forms.RadioButton();
+            this.exerciseRadioButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
@@ -45,11 +45,18 @@
             // 
             // dataGridView
             // 
+            this.dataGridView.AllowUserToAddRows = false;
+            this.dataGridView.AllowUserToDeleteRows = false;
+            this.dataGridView.AllowUserToResizeRows = false;
             this.dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.dataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView.Location = new System.Drawing.Point(12, 121);
             this.dataGridView.Name = "dataGridView";
+            this.dataGridView.RowHeadersVisible = false;
+            this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView.Size = new System.Drawing.Size(268, 294);
             this.dataGridView.TabIndex = 0;
             // 
@@ -72,66 +79,75 @@
             // 
             // foodExerciseComboBox
             // 
+            this.foodExerciseComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.foodExerciseComboBox.FormattingEnabled = true;
-            this.foodExerciseComboBox.Location = new System.Drawing.Point(133, 15);
+            this.foodExerciseComboBox.Location = new System.Drawing.Point(6, 42);
             this.foodExerciseComboBox.Name = "foodExerciseComboBox";
-            this.foodExerciseComboBox.Size = new System.Drawing.Size(121, 21);
+            this.foodExerciseComboBox.Size = new System.Drawing.Size(159, 21);
             this.foodExerciseComboBox.TabIndex = 2;
+            this.foodExerciseComboBox.SelectedIndexChanged += new System.EventHandler(this.foodExerciseComboBox_SelectedIndexChanged);
             // 
-            // textBox1
+            // timeTextBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(133, 42);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(121, 20);
-            this.textBox1.TabIndex = 4;
+            this.timeTextBox.Location = new System.Drawing.Point(171, 42);
+            this.timeTextBox.Name = "timeTextBox";
+            this.timeTextBox.Size = new System.Drawing.Size(91, 20);
+            this.timeTextBox.TabIndex = 4;
+            this.timeTextBox.TextChanged += new System.EventHandler(this.timeTextBox_TextChanged);
+            this.timeTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.timeTextBox_KeyUp);
             // 
             // addButton
             // 
-            this.addButton.Location = new System.Drawing.Point(62, 68);
+            this.addButton.Location = new System.Drawing.Point(41, 68);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(192, 23);
             this.addButton.TabIndex = 5;
             this.addButton.Text = "Add";
             this.addButton.UseVisualStyleBackColor = true;
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // deleteButton
             // 
+            this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.deleteButton.Location = new System.Drawing.Point(12, 421);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(96, 23);
             this.deleteButton.TabIndex = 6;
             this.deleteButton.Text = "Delete Selected";
             this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
-            // radioButton1
+            // foodRadioButton
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(6, 19);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(49, 17);
-            this.radioButton1.TabIndex = 7;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Food";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.foodRadioButton.AutoSize = true;
+            this.foodRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.foodRadioButton.Name = "foodRadioButton";
+            this.foodRadioButton.Size = new System.Drawing.Size(49, 17);
+            this.foodRadioButton.TabIndex = 7;
+            this.foodRadioButton.TabStop = true;
+            this.foodRadioButton.Text = "Food";
+            this.foodRadioButton.UseVisualStyleBackColor = true;
+            this.foodRadioButton.CheckedChanged += new System.EventHandler(this.foodRadioButton_CheckedChanged);
             // 
-            // radioButton2
+            // exerciseRadioButton
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(62, 19);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(65, 17);
-            this.radioButton2.TabIndex = 8;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Exercise";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.exerciseRadioButton.AutoSize = true;
+            this.exerciseRadioButton.Location = new System.Drawing.Point(74, 19);
+            this.exerciseRadioButton.Name = "exerciseRadioButton";
+            this.exerciseRadioButton.Size = new System.Drawing.Size(65, 17);
+            this.exerciseRadioButton.TabIndex = 8;
+            this.exerciseRadioButton.TabStop = true;
+            this.exerciseRadioButton.Text = "Exercise";
+            this.exerciseRadioButton.UseVisualStyleBackColor = true;
+            this.exerciseRadioButton.CheckedChanged += new System.EventHandler(this.exerciseRadioButton_CheckedChanged);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.radioButton2);
+            this.groupBox1.Controls.Add(this.exerciseRadioButton);
             this.groupBox1.Controls.Add(this.foodExerciseComboBox);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.foodRadioButton);
+            this.groupBox1.Controls.Add(this.timeTextBox);
             this.groupBox1.Controls.Add(this.addButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
@@ -143,7 +159,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(65, 45);
+            this.label1.Location = new System.Drawing.Point(168, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 13);
             this.label1.TabIndex = 9;
@@ -172,11 +188,11 @@
         private System.Windows.Forms.DataGridView dataGridView;
         private ZedGraph.ZedGraphControl zedGraphControl;
         private System.Windows.Forms.ComboBox foodExerciseComboBox;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox timeTextBox;
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Button deleteButton;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton foodRadioButton;
+        private System.Windows.Forms.RadioButton exerciseRadioButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
     }

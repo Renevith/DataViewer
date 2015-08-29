@@ -10,12 +10,18 @@ namespace HealthSimulator {
             public int Id;
             public string Name;
             public double ExerciseIndex;
+            public override string ToString() {
+                return Name;
+            }
         }
 
         public class FoodData {
             public int Id;
             public string Name;
             public double GlycemicIndex;
+            public override string ToString() {
+                return Name;
+            }
         }
 
         //fake database table:

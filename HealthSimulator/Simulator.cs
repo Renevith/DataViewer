@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HealthSimulator {
-    class Simulator {
+    public class Simulator {
         private DateTime? Today; //simulator is only capable of simulating one day, so keep track which one
         private List<Activity> Activities;
 
@@ -39,8 +39,9 @@ namespace HealthSimulator {
     }
 
     public abstract class Activity {
-        public string ActivityType { get; protected set; }
         public DateTime ActivityTime { get; protected set; }
+        public string Description { get; protected set; }
+        public string ActivityType { get; protected set; }
         protected TimeSpan Onset { get; set; }
 
         public abstract double GetEffect(DateTime asOfTime);
@@ -55,6 +56,7 @@ namespace HealthSimulator {
             Onset = new TimeSpan(2, 0, 0); //2 hours
 
             Food = food;
+            Description = food.Name;
         }
 
         public override double GetEffect(DateTime asOfTime) {
@@ -75,6 +77,7 @@ namespace HealthSimulator {
             Onset = new TimeSpan(1, 0, 0); //1 hour
 
             Exercise = exercise;
+            Description = exercise.Name;
         }
 
         public override double GetEffect(DateTime asOfTime) {
