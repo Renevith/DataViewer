@@ -6,20 +6,19 @@ using System.Threading.Tasks;
 
 namespace HealthSimulator {
     public class Simulator {
+        const double STARTING_BLOOD_SUGAR = 80;
         private List<Activity> Activities;
 
-        public Simulator() {
-            Activities = new List<Activity>();
+        public Simulator(IEnumerable<Activity> activities) {
+            Activities = activities.ToList();
+            AddNormalization();
         }
 
-        public void AddActivities(IEnumerable<Activity> activities) {
-            Activities.AddRange(activities);
-            Activities.RemoveAll(x => x is NormalizationActivity);
-            Activities.AddRange(GetNormalization());
+        public void AddActivities() {
         }
 
         public double GetBloodSugar(TimeSpan time) {
-            return Activities.Sum(x => x.GetEffect(time));
+            return STARTING_BLOOD_SUGAR + Activities.Sum(x => x.GetEffect(time));
         }
 
         public double GetCumulativeGlycation(TimeSpan time) {
@@ -31,16 +30,14 @@ namespace HealthSimulator {
             return glycation;
         }
 
-        private IEnumerable<Activity> GetNormalization() {
-            var normalizations = new List<Activity>();
+        private void AddNormalization() {
             var sorted = Activities.Where(x => !(x is NormalizationActivity)).OrderBy(x => x.ActivityTime).ToList();
             for (int i = 0; i < sorted.Count(); i++) {
                 var normalizationStart = sorted[i].ActivityTime + sorted[i].Onset;
-                var normalizationEnd = sorted[i + 1].ActivityTime;
+                var normalizationEnd = (i + 1 < sorted.Count()) ? sorted[i + 1].ActivityTime : TimeSpan.MaxValue;
                 if (normalizationStart < normalizationEnd)
-                    normalizations.Add(new NormalizationActivity(normalizationStart, normalizationEnd, GetBloodSugar(normalizationStart)));
+                    Activities.Add(new NormalizationActivity(normalizationStart, normalizationEnd, GetBloodSugar(normalizationStart)));
             }
-            return normalizations;
         }
     }
 
@@ -48,7 +45,7 @@ namespace HealthSimulator {
         public TimeSpan ActivityTime { get; protected set; }
         public string Description { get; protected set; }
         public string ActivityType { get; protected set; }
-        public TimeSpan Onset { get; protected set; }
+        public TimeSpan Onset;
 
         public abstract double GetEffect(TimeSpan asOfTime);
     }
@@ -90,33 +87,34 @@ namespace HealthSimulator {
             if (asOfTime <= ActivityTime)
                 return 0;
             if (asOfTime >= ActivityTime + Onset)
-                return Exercise.ExerciseIndex;
-            return Exercise.ExerciseIndex * ((asOfTime - ActivityTime).TotalMinutes / Onset.TotalMinutes);
+                return -Exercise.ExerciseIndex;
+            return -Exercise.ExerciseIndex * ((asOfTime - ActivityTime).TotalMinutes / Onset.TotalMinutes);
         }
     }
 
-    public class NormalizationActivity : Activity {
+    internal class NormalizationActivity : Activity {
         private const double RATE_PER_MINUTE = 1;
         private const double TARGET_BLOOD_SUGAR = 80;
+        private double Rate;
 
         public NormalizationActivity(TimeSpan startTime, TimeSpan endTime, double currentBloodSugar) {
             ActivityType = "Normalization";
             ActivityTime = startTime;
-            var rate = RATE_PER_MINUTE * (currentBloodSugar > TARGET_BLOOD_SUGAR ? -1 : 1);
-            var timeToNeutral = TimeSpan.FromMinutes((TARGET_BLOOD_SUGAR - currentBloodSugar) / rate);
-            if (endTime > timeToNeutral)
-                endTime = timeToNeutral;
-            Onset = endTime - startTime;
+            Rate = RATE_PER_MINUTE * (currentBloodSugar > TARGET_BLOOD_SUGAR ? -1 : 1);
+            var timeToNeutral = TimeSpan.FromMinutes((TARGET_BLOOD_SUGAR - currentBloodSugar) / Rate);
+            if (endTime < startTime + timeToNeutral)
+                Onset = endTime - startTime;
+            else
+                Onset = timeToNeutral;
             Description = "";
         }
 
-        //normalization effect is 
         public override double GetEffect(TimeSpan asOfTime) {
             if (asOfTime <= ActivityTime)
                 return 0;
             if (asOfTime >= ActivityTime + Onset)
-                return RATE_PER_MINUTE * Onset.TotalMinutes;
-            return RATE_PER_MINUTE * (asOfTime - ActivityTime).TotalMinutes;
+                return Rate * Onset.TotalMinutes;
+            return Rate * (asOfTime - ActivityTime).TotalMinutes;
         }
     }
 }

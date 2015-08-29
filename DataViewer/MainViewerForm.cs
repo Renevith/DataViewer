@@ -22,6 +22,33 @@ namespace DataViewer
             dataGridView.DataSource = Activities;
         }
 
+        private void GenerateGraph() {
+            zedGraphControl.GraphPane.CurveList.Clear();
+            if (Activities.Any()) {
+                var sim = new Simulator(Activities);
+                const int pointsToDraw = 100;
+                TimeSpan chartEndTime = Activities.Max(x => x.ActivityTime + x.Onset);
+                if (chartEndTime < TimeSpan.FromHours(24))
+                    chartEndTime = TimeSpan.FromHours(24);
+                var bloodSugar = new ZedGraph.PointPairList();
+                for (int i = 0; i < pointsToDraw; i++) {
+                    TimeSpan time = TimeSpan.FromMinutes((i * chartEndTime.TotalMinutes) / (pointsToDraw - 1));
+                    double sugar = sim.GetBloodSugar(time);
+                    bloodSugar.Add(new ZedGraph.PointPair(time.TotalHours, sugar));
+                }
+                var glycation = new ZedGraph.PointPairList();
+                for (int i = 0; i < pointsToDraw; i++) {
+                    TimeSpan time = TimeSpan.FromMinutes((i * chartEndTime.TotalMinutes) / (pointsToDraw - 1));
+                    double gly = sim.GetCumulativeGlycation(time);
+                    glycation.Add(new ZedGraph.PointPair(time.TotalHours, gly));
+                }
+
+                zedGraphControl.GraphPane.AddCurve("Blood Sugar", bloodSugar, Color.Green, ZedGraph.SymbolType.None);
+                zedGraphControl.GraphPane.AddCurve("Cumulative Glycation", glycation, Color.Red, ZedGraph.SymbolType.None);
+            }
+            zedGraphControl.RestoreScale(zedGraphControl.GraphPane);
+        }
+
         private void foodRadioButton_CheckedChanged(object sender, EventArgs e) {
             if (!foodRadioButton.Checked)
                 return;
@@ -70,7 +97,9 @@ namespace DataViewer
 
             foodExerciseComboBox.SelectedItem = null;
             timeTextBox.Clear();
+
             Activities.ResetBindings();
+            GenerateGraph();
         }
 
         private void foodExerciseComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -88,6 +117,7 @@ namespace DataViewer
                 Activities.Remove((Activity)row.DataBoundItem);
             }
             Activities.ResetBindings();
+            GenerateGraph();
         }
 
         private void timeTextBox_KeyUp(object sender, KeyEventArgs e) {
