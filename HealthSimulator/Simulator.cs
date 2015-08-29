@@ -24,7 +24,7 @@ namespace HealthSimulator {
 
         public double GetCumulativeGlycation(TimeSpan time) {
             int glycation = 0;
-            for (int minute = 0; minute < time.TotalMinutes; minute++) {
+            for (int minute = 0; minute <= time.TotalMinutes; minute++) {
                 if (GetBloodSugar(TimeSpan.FromMinutes(minute)) > 150)
                     glycation++;
             }
