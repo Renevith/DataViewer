@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HealthSimulator {
     public class Simulator {
-        const double STARTING_BLOOD_SUGAR = 80;
-        private List<Activity> Activities;
+        private const double STARTING_BLOOD_SUGAR = 80;
+        private readonly List<Activity> Activities;
 
         public Simulator(IEnumerable<Activity> activities) {
             Activities = activities.ToList();
@@ -33,9 +31,9 @@ namespace HealthSimulator {
 
         private void AddNormalization() {
             var sorted = Activities.Where(x => !(x is NormalizationActivity)).OrderBy(x => x.ActivityTime).ToList();
-            for (int i = 0; i < sorted.Count(); i++) {
+            for (int i = 0; i < sorted.Count; i++) {
                 var normalizationStart = sorted[i].ActivityTime + sorted[i].Onset;
-                var normalizationEnd = (i + 1 < sorted.Count()) ? sorted[i + 1].ActivityTime : TimeSpan.MaxValue;
+                var normalizationEnd = (i + 1 < sorted.Count) ? sorted[i + 1].ActivityTime : TimeSpan.MaxValue;
                 if (normalizationStart < normalizationEnd)
                     Activities.Add(new NormalizationActivity(normalizationStart, normalizationEnd, GetBloodSugar(normalizationStart)));
             }
@@ -52,7 +50,7 @@ namespace HealthSimulator {
     }
 
     public class FoodActivity : Activity {
-        Data.FoodData Food;
+        private readonly Data.FoodData Food;
 
         public FoodActivity(Data.FoodData food, TimeSpan time) {
             ActivityType = "Food";
@@ -73,7 +71,7 @@ namespace HealthSimulator {
     }
 
     public class ExerciseActivity : Activity {
-        private Data.ExerciseData Exercise;
+        private readonly Data.ExerciseData Exercise;
 
         public ExerciseActivity(Data.ExerciseData exercise, TimeSpan time) {
             ActivityType = "Exercise";
@@ -96,7 +94,7 @@ namespace HealthSimulator {
     internal class NormalizationActivity : Activity {
         private const double RATE_PER_MINUTE = 1;
         private const double TARGET_BLOOD_SUGAR = 80;
-        private double Rate;
+        private readonly double Rate;
 
         public NormalizationActivity(TimeSpan startTime, TimeSpan endTime, double currentBloodSugar) {
             ActivityType = "Normalization";
