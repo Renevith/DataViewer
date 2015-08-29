@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -27,7 +28,18 @@ namespace DataViewer {
                 .SelectMany(x => new[] {x.ActivityTime, x.ActivityTime + x.Onset})
                 .Union(new[] {TimeSpan.FromHours(0), TimeSpan.FromHours(24)})
                 .Distinct()
-                .OrderBy(x => x);
+                .OrderBy(x => x)
+                .ToList();
+
+            //Add any starting or ending points for glycation, when blood sugar crosses 150:
+            var crossovers = new List<TimeSpan>();
+            for (int i = 0; i + 1 < xValues.Count; i++) {
+                if (Math.Sign(sim.GetBloodSugar(xValues[i]) - 150) != Math.Sign(sim.GetBloodSugar(xValues[i + 1]) - 150)) {
+                    var fractionOfTime = (150 - sim.GetBloodSugar(xValues[i])) / (sim.GetBloodSugar(xValues[i + 1]) - sim.GetBloodSugar(xValues[i]));
+                    crossovers.Add(xValues[i] + TimeSpan.FromMinutes(fractionOfTime * (xValues[i + 1] - xValues[i]).TotalMinutes));
+                }
+            }
+            xValues = xValues.Union(crossovers).Distinct().OrderBy(x => x).ToList();
 
             var bloodSugar = new ZedGraph.PointPairList();
             foreach (var time in xValues) {
