@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using HealthSimulator;
 
-namespace DataViewer
-{
-    public partial class MainViewerForm : Form
-    {
+namespace DataViewer {
+    public partial class MainViewerForm : Form {
         private readonly BindingList<Activity> Activities;
 
-        public MainViewerForm()
-        {
+        public MainViewerForm() {
             InitializeComponent();
             Activities = new BindingList<Activity>();
             dataGridView.DataSource = Activities;
@@ -28,58 +21,60 @@ namespace DataViewer
 
         private void GenerateGraph() {
             zedGraphControl.GraphPane.CurveList.Clear();
-                var sim = new Simulator(Activities);
-                //figure out any points where the graph potentially changes slope:
-                var xValues = sim.GetActivitiesAndNormalizations()
-                                 .SelectMany(x => new[] { x.ActivityTime, x.ActivityTime + x.Onset })
-                                 .Union(new[] { TimeSpan.FromHours(0), TimeSpan.FromHours(24) })
-                                 .Distinct()
-                                 .OrderBy(x => x);
+            var sim = new Simulator(Activities);
+            //figure out any points where the graph potentially changes slope:
+            var xValues = sim.GetActivitiesAndNormalizations()
+                .SelectMany(x => new[] {x.ActivityTime, x.ActivityTime + x.Onset})
+                .Union(new[] {TimeSpan.FromHours(0), TimeSpan.FromHours(24)})
+                .Distinct()
+                .OrderBy(x => x);
 
-                var bloodSugar = new ZedGraph.PointPairList();
-                foreach (var time in xValues) {
-                    double sugar = sim.GetBloodSugar(time);
-                    bloodSugar.Add(new ZedGraph.PointPair(time.TotalHours, sugar));
-                }
+            var bloodSugar = new ZedGraph.PointPairList();
+            foreach (var time in xValues) {
+                double sugar = sim.GetBloodSugar(time);
+                bloodSugar.Add(new ZedGraph.PointPair(time.TotalHours, sugar));
+            }
 
-                var glycation = new ZedGraph.PointPairList();
-                foreach (var time in xValues) {
-                    double gly = sim.GetCumulativeGlycation(time);
-                    glycation.Add(new ZedGraph.PointPair(time.TotalHours, gly));
-                }
+            var glycation = new ZedGraph.PointPairList();
+            foreach (var time in xValues) {
+                double gly = sim.GetCumulativeGlycation(time);
+                glycation.Add(new ZedGraph.PointPair(time.TotalHours, gly));
+            }
 
-                var foodEvents = new ZedGraph.PointPairList();
-                foreach (var time in Activities.OfType<FoodActivity>().Select(x => x.ActivityTime)) {
-                    double point = sim.GetBloodSugar(time);
-                    foodEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
-                }
+            var foodEvents = new ZedGraph.PointPairList();
+            foreach (var time in Activities.OfType<FoodActivity>().Select(x => x.ActivityTime)) {
+                double point = sim.GetBloodSugar(time);
+                foodEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
+            }
 
-                var exerciseEvents = new ZedGraph.PointPairList();
-                foreach (var time in Activities.OfType<ExerciseActivity>().Select(x => x.ActivityTime)) {
-                    double point = sim.GetBloodSugar(time);
-                    exerciseEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
-                }
+            var exerciseEvents = new ZedGraph.PointPairList();
+            foreach (var time in Activities.OfType<ExerciseActivity>().Select(x => x.ActivityTime)) {
+                double point = sim.GetBloodSugar(time);
+                exerciseEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
+            }
 
-                var threshold = new ZedGraph.PointPairList(new[] { 0.0, 24.0 }, new[] { 150.0, 150.0 });
+            var threshold = new ZedGraph.PointPairList(new[] {0.0, 24.0}, new[] {150.0, 150.0});
 
-                zedGraphControl.GraphPane.AddCurve("Blood Sugar", bloodSugar, Color.Green, ZedGraph.SymbolType.None);
-                zedGraphControl.GraphPane.AddCurve("Cumulative Glycation", glycation, Color.Red, ZedGraph.SymbolType.None);
-                var line = zedGraphControl.GraphPane.AddCurve("Glycation threshold", threshold, Color.Red, ZedGraph.SymbolType.HDash);
-                line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
-                var food = zedGraphControl.GraphPane.AddCurve("", foodEvents, Color.Red, ZedGraph.SymbolType.Triangle);
-                food.Line.IsVisible = false;
-                food.Symbol.Fill.Type = ZedGraph.FillType.Solid;
-                var exercise = zedGraphControl.GraphPane.AddCurve("", exerciseEvents, Color.Green, ZedGraph.SymbolType.TriangleDown);
-                exercise.Line.IsVisible = false;
-                exercise.Symbol.Fill.Type = ZedGraph.FillType.Solid;
+            zedGraphControl.GraphPane.AddCurve("Blood Sugar", bloodSugar, Color.Green, ZedGraph.SymbolType.None);
+            zedGraphControl.GraphPane.AddCurve("Cumulative Glycation", glycation, Color.Red, ZedGraph.SymbolType.None);
+            var line = zedGraphControl.GraphPane.AddCurve("Glycation threshold", threshold, Color.Red,
+                ZedGraph.SymbolType.HDash);
+            line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
+            var food = zedGraphControl.GraphPane.AddCurve("", foodEvents, Color.Red, ZedGraph.SymbolType.Triangle);
+            food.Line.IsVisible = false;
+            food.Symbol.Fill.Type = ZedGraph.FillType.Solid;
+            var exercise = zedGraphControl.GraphPane.AddCurve("", exerciseEvents, Color.Green,
+                ZedGraph.SymbolType.TriangleDown);
+            exercise.Line.IsVisible = false;
+            exercise.Symbol.Fill.Type = ZedGraph.FillType.Solid;
             zedGraphControl.RestoreScale(zedGraphControl.GraphPane);
         }
 
         private void foodRadioButton_CheckedChanged(object sender, EventArgs e) {
             if (!foodRadioButton.Checked)
                 return;
-            foodRadioButton.BackColor = RadioButton.DefaultBackColor;
-            exerciseRadioButton.BackColor = RadioButton.DefaultBackColor;
+            foodRadioButton.BackColor = DefaultBackColor;
+            exerciseRadioButton.BackColor = DefaultBackColor;
             foodExerciseComboBox.Items.Clear();
             foodExerciseComboBox.Items.AddRange(Data.FoodDatabase.ToArray<object>());
         }
@@ -87,8 +82,8 @@ namespace DataViewer
         private void exerciseRadioButton_CheckedChanged(object sender, EventArgs e) {
             if (!exerciseRadioButton.Checked)
                 return;
-            foodRadioButton.BackColor = RadioButton.DefaultBackColor;
-            exerciseRadioButton.BackColor = RadioButton.DefaultBackColor;
+            foodRadioButton.BackColor = DefaultBackColor;
+            exerciseRadioButton.BackColor = DefaultBackColor;
             foodExerciseComboBox.Items.Clear();
             foodExerciseComboBox.Items.AddRange(Data.ExerciseDatabase.ToArray<object>());
         }
