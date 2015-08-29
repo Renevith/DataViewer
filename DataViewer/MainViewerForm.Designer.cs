@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainViewerForm));
             this.dataGridView = new System.Windows.Forms.DataGridView();
             this.zedGraphControl = new ZedGraph.ZedGraphControl();
             this.foodExerciseComboBox = new System.Windows.Forms.ComboBox();
@@ -186,8 +187,9 @@
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.zedGraphControl);
             this.Controls.Add(this.dataGridView);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainViewerForm";
-            this.Text = "MainViewerForm";
+            this.Text = "Blood Sugar Data Viewer";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
