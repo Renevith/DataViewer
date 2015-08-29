@@ -39,6 +39,7 @@
             this.exerciseRadioButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.addRandomButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -109,7 +110,7 @@
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteButton.Location = new System.Drawing.Point(12, 421);
+            this.deleteButton.Location = new System.Drawing.Point(184, 421);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(96, 23);
             this.deleteButton.TabIndex = 6;
@@ -165,11 +166,22 @@
             this.label1.TabIndex = 9;
             this.label1.Text = "Hours into day:";
             // 
+            // addRandomButton
+            // 
+            this.addRandomButton.Location = new System.Drawing.Point(12, 421);
+            this.addRandomButton.Name = "addRandomButton";
+            this.addRandomButton.Size = new System.Drawing.Size(97, 23);
+            this.addRandomButton.TabIndex = 10;
+            this.addRandomButton.Text = "Add Random!";
+            this.addRandomButton.UseVisualStyleBackColor = true;
+            this.addRandomButton.Click += new System.EventHandler(this.addRandomButton_Click);
+            // 
             // MainViewerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(810, 456);
+            this.Controls.Add(this.addRandomButton);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.zedGraphControl);
@@ -195,5 +207,6 @@
         private System.Windows.Forms.RadioButton exerciseRadioButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button addRandomButton;
     }
 }

@@ -133,5 +133,23 @@ namespace DataViewer
             if (e.KeyData == Keys.Enter)
                 addButton_Click(sender, e);
         }
+
+        private void addRandomButton_Click(object sender, EventArgs e) {
+            Activity randomActivity;
+            var r = new Random();
+            if (r.NextDouble() < 0.6) {
+                var data = Data.FoodDatabase.OrderBy(x => r.NextDouble()).First();
+                var time = TimeSpan.FromMinutes(r.Next(60, 1000));
+                randomActivity = new FoodActivity(data, time);
+            }
+            else {
+                var data = Data.ExerciseDatabase.OrderBy(x => r.NextDouble()).First();
+                var time = TimeSpan.FromMinutes(r.Next(180, 1000));
+                randomActivity = new ExerciseActivity(data, time);
+            }
+            Activities.Add(randomActivity);
+            Activities.ResetBindings();
+            GenerateGraph();
+        }
     }
 }
