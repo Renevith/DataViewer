@@ -48,12 +48,30 @@ namespace DataViewer
                     glycation.Add(new ZedGraph.PointPair(time.TotalHours, gly));
                 }
 
+                var foodEvents = new ZedGraph.PointPairList();
+                foreach (var time in Activities.OfType<FoodActivity>().Select(x => x.ActivityTime)) {
+                    double point = sim.GetBloodSugar(time);
+                    foodEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
+                }
+
+                var exerciseEvents = new ZedGraph.PointPairList();
+                foreach (var time in Activities.OfType<ExerciseActivity>().Select(x => x.ActivityTime)) {
+                    double point = sim.GetBloodSugar(time);
+                    exerciseEvents.Add(new ZedGraph.PointPair(time.TotalHours, point));
+                }
+
                 var threshold = new ZedGraph.PointPairList(new[] { 0.0, 24.0 }, new[] { 150.0, 150.0 });
 
                 zedGraphControl.GraphPane.AddCurve("Blood Sugar", bloodSugar, Color.Green, ZedGraph.SymbolType.None);
                 zedGraphControl.GraphPane.AddCurve("Cumulative Glycation", glycation, Color.Red, ZedGraph.SymbolType.None);
                 var line = zedGraphControl.GraphPane.AddCurve("Glycation threshold", threshold, Color.Red, ZedGraph.SymbolType.HDash);
                 line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
+                var food = zedGraphControl.GraphPane.AddCurve("", foodEvents, Color.Red, ZedGraph.SymbolType.Triangle);
+                food.Line.IsVisible = false;
+                food.Symbol.Fill.Type = ZedGraph.FillType.Solid;
+                var exercise = zedGraphControl.GraphPane.AddCurve("", exerciseEvents, Color.Green, ZedGraph.SymbolType.TriangleDown);
+                exercise.Line.IsVisible = false;
+                exercise.Symbol.Fill.Type = ZedGraph.FillType.Solid;
             zedGraphControl.RestoreScale(zedGraphControl.GraphPane);
         }
 
