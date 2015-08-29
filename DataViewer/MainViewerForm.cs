@@ -110,18 +110,15 @@ namespace DataViewer {
             //add new entry to data grid:
             if (foodRadioButton.Checked) {
                 var foodData = (Data.FoodData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new FoodActivity(foodData, time));
+                AddActivity(new FoodActivity(foodData, time));
             }
             else if (exerciseRadioButton.Checked) {
                 var exerciseData = (Data.ExerciseData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new ExerciseActivity(exerciseData, time));
+                AddActivity(new ExerciseActivity(exerciseData, time));
             }
 
             foodExerciseComboBox.SelectedItem = null;
             timeTextBox.Clear();
-
-            Activities.ResetBindings();
-            GenerateGraph();
         }
 
         private void foodExerciseComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -160,7 +157,13 @@ namespace DataViewer {
                 var time = TimeSpan.FromMinutes(r.Next(180, 1000));
                 randomActivity = new ExerciseActivity(data, time);
             }
-            Activities.Add(randomActivity);
+            AddActivity(randomActivity);
+        }
+
+        private void AddActivity(Activity a) {
+            var insertAfter = Activities.Where(x => x.ActivityTime <= a.ActivityTime).OrderByDescending(x => x.ActivityTime).FirstOrDefault();
+            var insertIndex = (insertAfter == null ? 0 : Activities.IndexOf(insertAfter) + 1);
+            Activities.Insert(insertIndex, a);
             Activities.ResetBindings();
             GenerateGraph();
         }
