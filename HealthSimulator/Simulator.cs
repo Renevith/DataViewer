@@ -14,7 +14,8 @@ namespace HealthSimulator {
             AddNormalization();
         }
 
-        public void AddActivities() {
+        public IEnumerable<Activity> GetActivitiesAndNormalizations() {
+            return Activities.ToList();
         }
 
         public double GetBloodSugar(TimeSpan time) {

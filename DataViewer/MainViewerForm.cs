@@ -20,32 +20,40 @@ namespace DataViewer
             InitializeComponent();
             Activities = new BindingList<Activity>();
             dataGridView.DataSource = Activities;
+            zedGraphControl.GraphPane.Title.Text = "Blood sugar simulation";
+            zedGraphControl.GraphPane.XAxis.Title.Text = "Hours into day";
+            zedGraphControl.GraphPane.YAxis.Title.IsVisible = false;
+            GenerateGraph();
         }
 
         private void GenerateGraph() {
             zedGraphControl.GraphPane.CurveList.Clear();
-            if (Activities.Any()) {
                 var sim = new Simulator(Activities);
-                const int pointsToDraw = 100;
-                TimeSpan chartEndTime = Activities.Max(x => x.ActivityTime + x.Onset);
-                if (chartEndTime < TimeSpan.FromHours(24))
-                    chartEndTime = TimeSpan.FromHours(24);
+                //figure out any points where the graph potentially changes slope:
+                var xValues = sim.GetActivitiesAndNormalizations()
+                                 .SelectMany(x => new[] { x.ActivityTime, x.ActivityTime + x.Onset })
+                                 .Union(new[] { TimeSpan.FromHours(0), TimeSpan.FromHours(24) })
+                                 .Distinct()
+                                 .OrderBy(x => x);
+
                 var bloodSugar = new ZedGraph.PointPairList();
-                for (int i = 0; i < pointsToDraw; i++) {
-                    TimeSpan time = TimeSpan.FromMinutes((i * chartEndTime.TotalMinutes) / (pointsToDraw - 1));
+                foreach (var time in xValues) {
                     double sugar = sim.GetBloodSugar(time);
                     bloodSugar.Add(new ZedGraph.PointPair(time.TotalHours, sugar));
                 }
+
                 var glycation = new ZedGraph.PointPairList();
-                for (int i = 0; i < pointsToDraw; i++) {
-                    TimeSpan time = TimeSpan.FromMinutes((i * chartEndTime.TotalMinutes) / (pointsToDraw - 1));
+                foreach (var time in xValues) {
                     double gly = sim.GetCumulativeGlycation(time);
                     glycation.Add(new ZedGraph.PointPair(time.TotalHours, gly));
                 }
 
+                var threshold = new ZedGraph.PointPairList(new[] { 0.0, 24.0 }, new[] { 150.0, 150.0 });
+
                 zedGraphControl.GraphPane.AddCurve("Blood Sugar", bloodSugar, Color.Green, ZedGraph.SymbolType.None);
                 zedGraphControl.GraphPane.AddCurve("Cumulative Glycation", glycation, Color.Red, ZedGraph.SymbolType.None);
-            }
+                var line = zedGraphControl.GraphPane.AddCurve("Glycation threshold", threshold, Color.Red, ZedGraph.SymbolType.HDash);
+                line.Line.Style = System.Drawing.Drawing2D.DashStyle.Dash;
             zedGraphControl.RestoreScale(zedGraphControl.GraphPane);
         }
 
@@ -79,20 +87,21 @@ namespace DataViewer
                 foodExerciseComboBox.DroppedDown = true;
                 return;
             }
-            TimeSpan t;
-            if (!TimeSpan.TryParse(timeTextBox.Text, out t)) {
+            Double d;
+            if (!Double.TryParse(timeTextBox.Text, out d)) {
                 timeTextBox.BackColor = Color.Red;
                 return;
             }
+            var time = TimeSpan.FromHours(d);
 
             //add new entry to data grid:
             if (foodRadioButton.Checked) {
                 var foodData = (Data.FoodData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new FoodActivity(foodData, t));
+                Activities.Add(new FoodActivity(foodData, time));
             }
             else if (exerciseRadioButton.Checked) {
                 var exerciseData = (Data.ExerciseData)foodExerciseComboBox.SelectedItem;
-                Activities.Add(new ExerciseActivity(exerciseData, t));
+                Activities.Add(new ExerciseActivity(exerciseData, time));
             }
 
             foodExerciseComboBox.SelectedItem = null;
